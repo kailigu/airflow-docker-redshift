@@ -1,0 +1,43 @@
+version: '2.1'
+services:
+
+######################################################
+# DATABASE SERVICE
+######################################################
+  postgres:
+    image: "postgres:9.6"
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    #volumes:
+      #- ./mnt/postgres:/var/lib/postgresql/data/pgdata
+    environment:
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=airflow
+      - POSTGRES_DB=airflow
+      #- PGDATA=/var/lib/postgresql/data/pgdata
+
+
+######################################################
+# AIRFLOW
+######################################################
+  airflow:
+    build: ./docker/airflow
+    restart: always
+    container_name: airflow
+    volumes:
+      - ./mnt/airflow/dags:/usr/local/airflow/dags
+      - ./mnt/airflow/plugins:/usr/local/airflow/plugins
+      - ./mnt/airflow/airflow.cfg:/usr/local/airflow/airflow.cfg
+    ports:
+      - 8080:8080
+    sysctls:
+      - net.ipv4.tcp_keepalive_time=5
+      - net.ipv4.tcp_keepalive_intvl=1
+      - net.ipv4.tcp_keepalive_probes=5
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "airflow", "8080" ]
+      timeout: 45s
+      interval: 10s
+      retries: 10
+    container_name: airflow_udac
