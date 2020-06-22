@@ -14,7 +14,7 @@ $ docker-compose up --build
 ```
 2. Create a redshift cluster and add aws crendential and redshift connection details in airflow:
 
-![img](img/redshit-connect.png)
+![img](img/redshift-connect.png)
 
 3. Trigger the DAG and run tasks
 
@@ -30,7 +30,7 @@ $ docker-compose up --build
 ├── docker-compose.yml                      # docker-compose file to start containers 
 ├── img                                     # Images used in README.md
 │   ├── example-dag.png
-│   └── redshit-connect.png
+│   └── redshift-connect.png
 └── mnt                                     # Folder shared between docker container and local computer
     └── airflow                             # Folder following the directory structure of Airflow
         ├── airflow.cfg
@@ -54,7 +54,24 @@ $ docker-compose up --build
                 ├── load_fact.py            # Operator loading data to fact table
                 └── stage_redshift.py       # Operator loading data from S3 to staging tables in Redshift
 ```
+### Project Datasets
+- Log data: s3://udacity-dend/log_data
 
+- Song data: s3://udacity-dend/song_data
 
+### The DAG definition
+Flow chart of the DAG:
 
+![img](img/example-dag.png)
 
+### Operators
+Operators are defined to represent repeated actions like - load data to several stage tables, load data to several fact and dimension tables, and run data quality checks on each table. 
+
+#### Stage Operator
+The stage operator loads any JSON formatted files from S3 to Amazon Redshift. The operator creates and runs a SQL COPY statement based on the parameters provided. The operator's parameters specifies where in S3 the file is loaded and what is the target table. 
+
+#### Fact and Dimension Operators 
+Most of the logic is within the SQL transformations and the operator takes as input a SQL statement and target database on which to run the query against. Dimension loads are often done with the truncate-insert pattern where the target table is emptied before the load. Fact tables are usually so massive that they should only allow append type functionality.
+
+#### Data Quality Operator
+The operator's main functionality is to receive one or more SQL based test cases along with the expected results and execute the tests. For each the test, the test result and expected result needs to be checked and if there is no match, the operator should raise an exception and the task should retry and fail eventually.
