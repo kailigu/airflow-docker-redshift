@@ -31,5 +31,5 @@ class LoadDimensionOperator(BaseOperator):
 
 
         self.log.info(f"Loading data into Dimension Table {self.table_name}")
-        redshift_hook.run(self.sql_query)
+        redshift.run(self.sql_query)
         self.log.info(f"Dimension Table {self.table_name} is loaded.")

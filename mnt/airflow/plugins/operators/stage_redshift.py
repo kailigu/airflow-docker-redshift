@@ -34,6 +34,9 @@ class StageToRedshiftOperator(BaseOperator):
 
 
     def execute(self, context):
+        """
+          Load data from s3 to two target staging tables in Redshift.
+        """
         aws_hook = AwsHook(self.aws_credentials)
         credentials = aws_hook.get_credentials()
         redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id, sslmode='disable', keepalives_idle=5)
@@ -54,11 +57,7 @@ class StageToRedshiftOperator(BaseOperator):
         redshift.run(copy_sql)
         self.log.info(f"Copied data from {s3_path} to table {self.table_name}")
 
-'''
 
-    def execute(self, context):
-        self.log.info('LoadDimensionOperator not implemented yet')
-'''
 
 
 

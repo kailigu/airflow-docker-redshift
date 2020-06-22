@@ -18,6 +18,9 @@ class DataQualityOperator(BaseOperator):
         
 
     def execute(self, context):
+        """
+          Check whether there's any records in the loaded fact and dimensional tables.
+        """
         redshift_hook = PostgresHook(self.redshift_conn_id)
 
         for table in self.tables:

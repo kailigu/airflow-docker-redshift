@@ -17,9 +17,9 @@ class LoadFactOperator(BaseOperator):
         self.sql_query = sql_query
 
     def execute(self, context):
-    '''
-        Load fact table from staging tables
-    '''
+        """
+          Load fact table from staging tables
+        """
         self.log.info(f"Loading fact table: {self.sql_query}")
         redshift_hook = PostgresHook(postgres_conn_id = self.redshift_conn_id)
         redshift_hook.run(self.sql_query)
